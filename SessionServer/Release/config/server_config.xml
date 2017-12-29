@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SessionServer>
+    <ListenPort>31257</ListenPort>
+    <ConnectionBacklog>100</ConnectionBacklog>
+    <Logger>
+        <!--
+        Logger level: 1 = FATAL, 2 = CRITICAL, 3 = ERROR, 4 = WARNING,
+                      5 = NOTICE, 6 = INFORMATION, 7 = DEBUG, 8 = TRACE
+        -->
+        <LogLevel>7</LogLevel>
+        <LogFileDir>D:\Development\Git\RemotePharmacist\SessionServer\Log</LogFileDir>
+    </Logger>
+	<Database>
+        <HostIP>127.0.0.1</HostIP>
+        <HostPort>5432</HostPort>
+        <DatabaseName>RemotePharmacist</DatabaseName>
+        <ConnectionTimeout>5</ConnectionTimeout>
+        <ConnectionPool minSize="10" maxSize="20">
+            <Account>postgres</Account>
+            <Password>root123</Password>
+            <Encoding>WIN1252</Encoding>
+        </ConnectionPool>
+    </Database>
+    <!-- The number of actual working threads will be the double of the configured one-->
+    <WorkingThreads size="4" />
+	<!-- HB timeout in seconds-->
+	<ClientHeartbeat timeout="10" check_pharmacist="false" check_patient="false"/>
+	<FileStore>
+		<Prescriptions>D:\Development\Git\RemotePharmacist\SessionServer\Log\Prescriptions</Prescriptions>
+		<Videos>D:\Development\Git\RemotePharmacist\SessionServer\Log\Videos</Videos>
+		<Audios>D:\Development\Git\RemotePharmacist\SessionServer\Log\Audios</Audios>
+	</FileStore>
+</SessionServer>

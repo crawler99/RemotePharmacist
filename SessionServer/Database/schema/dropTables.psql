@@ -1,0 +1,59 @@
+ALTER TABLE tbl_Pharmacists DROP CONSTRAINT fk_tbl_Pharmacists_1;
+ALTER TABLE tbl_Pharmacists DROP CONSTRAINT fk_tbl_Pharmacists_2;
+ALTER TABLE tbl_Stores_Pharmacists_Map DROP CONSTRAINT fk_tbl_Stores_Pharmacists_Map_1;
+ALTER TABLE tbl_Stores_Pharmacists_Map DROP CONSTRAINT fk_tbl_Stores_Pharmacists_Map_2;
+ALTER TABLE tbl_Patients DROP CONSTRAINT fk_tbl_Patients_1;
+ALTER TABLE tbl_Patients DROP CONSTRAINT fk_tbl_Patients_2;
+ALTER TABLE tbl_Pharmacists_Stats DROP CONSTRAINT fk_tbl_Pharmacists_Stats;
+ALTER TABLE tbl_Pharmacists_Activity_Log DROP CONSTRAINT fk_tbl_Pharmacists_Activity_Log;
+ALTER TABLE tbl_Conversations DROP CONSTRAINT fk_tbl_Conversations_1;
+ALTER TABLE tbl_Conversations DROP CONSTRAINT fk_tbl_Conversations_2;
+ALTER TABLE tbl_Prescriptions DROP CONSTRAINT fk_tbl_Prescriptions;
+ALTER TABLE tbl_DealOfPrescriptionDrug DROP CONSTRAINT fk_tbl_DealOfPrescriptionDrug_1;
+ALTER TABLE tbl_DealOfSpecialDrug DROP CONSTRAINT fk_tbl_DealOfSpecialDrug_1;
+
+DROP TABLE tbl_Users;
+DROP TABLE tbl_Pharmacist_Cert_Types;
+DROP TABLE tbl_Pharmacists;
+DROP TABLE tbl_Stores;
+DROP TABLE tbl_Stores_Pharmacists_Map;
+DROP TABLE tbl_Patients;
+DROP TABLE tbl_Pharmacists_Stats;
+DROP TABLE tbl_Pharmacists_Activity_Log;
+DROP TABLE tbl_Conversations;
+DROP TABLE tbl_Prescriptions;
+DROP TABLE tbl_DealOfPrescriptionDrug;
+DROP TABLE tbl_DealOfSpecialDrug;
+
+DROP AGGREGATE sumtext(text);
+DROP FUNCTION concat(text, text);
+DROP FUNCTION add_deal_of_prescription_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+);
+DROP FUNCTION add_deal_of_special_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerShenFenZheng      text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugGouMaiShuLiang     text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+);

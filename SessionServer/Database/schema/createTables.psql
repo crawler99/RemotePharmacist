@@ -1,0 +1,334 @@
+CREATE TABLE tbl_Users (
+	f_id           serial PRIMARY KEY,
+	f_username     varchar(64) NOT NULL UNIQUE,
+	f_password     varchar(64) NOT NULL,
+	f_role         smallint NOT NULL,
+	f_reg_time     timestamp NOT NULL,
+	f_is_active    boolean NOT NULL
+);
+
+CREATE TABLE tbl_Pharmacist_Cert_Types (
+	f_id           serial PRIMARY KEY,
+	f_type_name    varchar(128) NOT NULL UNIQUE
+);
+
+CREATE TABLE tbl_Pharmacists (
+	f_id                    integer,
+	f_shenfenzheng          text NOT NULL UNIQUE,
+	f_real_name             varchar(64) NOT NULL,
+	f_certificate_type_id   integer,
+	f_certificate           bytea NOT NULL,
+	f_fingerprint           bytea NOT NULL,
+	f_signature             bytea NOT NULL,
+	f_intro                 text,
+	f_photo                 bytea,
+	CONSTRAINT              fk_tbl_Pharmacists_1 FOREIGN KEY (f_id) REFERENCES tbl_Users (f_id),
+	CONSTRAINT              fk_tbl_Pharmacists_2 FOREIGN KEY (f_certificate_type_id) REFERENCES tbl_Pharmacist_Cert_Types (f_id)
+);
+
+CREATE TABLE tbl_Stores (
+	f_id                    serial PRIMARY KEY,
+	f_name                  text NOT NULL UNIQUE,
+	f_address               text NOT NULL,
+	f_is_active             boolean NOT NULL
+);
+
+CREATE TABLE tbl_Stores_Pharmacists_Map (
+	f_store_id              integer,
+	f_pharmacist_id         integer,
+	CONSTRAINT              fk_tbl_Stores_Pharmacists_Map_1 FOREIGN KEY (f_store_id) REFERENCES tbl_Stores (f_id),
+	CONSTRAINT              fk_tbl_Stores_Pharmacists_Map_2 FOREIGN KEY (f_pharmacist_id) REFERENCES tbl_Users (f_id),
+	UNIQUE                  (f_store_id, f_pharmacist_id)
+);
+
+CREATE TABLE tbl_Patients (
+	f_id           integer,
+	f_store_id     integer,
+	CONSTRAINT     fk_tbl_Patients_1 FOREIGN KEY (f_id) REFERENCES tbl_Users (f_id),
+	CONSTRAINT     fk_tbl_Patients_2 FOREIGN KEY (f_store_id) REFERENCES tbl_Stores (f_id)
+);
+
+CREATE TABLE tbl_Pharmacists_Stats (
+	f_id                   integer,
+	f_status               smallint NOT NULL,
+	f_last_login_time      timestamp,
+	f_last_logout_time     timestamp,
+	f_services_today       integer,
+	f_services_total       integer,
+	CONSTRAINT             fk_tbl_Pharmacists_Stats FOREIGN KEY (f_id) REFERENCES tbl_Users (f_id)
+);
+
+CREATE TABLE tbl_Pharmacists_Activity_Log (
+	f_id                   integer,
+	f_log_time             timestamp,
+	CONSTRAINT             fk_tbl_Pharmacists_Activity_Log FOREIGN KEY (f_id) REFERENCES tbl_Users (f_id)
+);
+
+CREATE TABLE tbl_Conversations
+(
+	f_id                       serial PRIMARY KEY,
+	f_pharmacist_id            integer,
+	f_pharmacist_session_id    integer NOT NULL,
+	f_patient_id               integer,
+	f_patient_session_id       integer NOT NULL,
+	f_starting_time            timestamp NOT NULL,
+	f_stopping_time            timestamp,
+	f_pharmacist_video_loc     text,
+	f_patient_video_loc        text,
+	f_pharmacist_audio_loc     text,
+	f_patient_audio_loc        text,
+	CONSTRAINT                 fk_tbl_Conversations_1 FOREIGN KEY (f_pharmacist_id) REFERENCES tbl_Users (f_id),
+	CONSTRAINT                 fk_tbl_Conversations_2 FOREIGN KEY (f_patient_id) REFERENCES tbl_Users (f_id)
+);
+
+CREATE TABLE tbl_Prescriptions
+(
+	f_id                       serial PRIMARY KEY,
+	f_conversation_id          integer,
+	f_direction                smallint NOT NULL,
+	f_gen_time                 timestamp NOT NULL,
+	f_prescription_loc         text NOT NULL,
+	CONSTRAINT                 fk_tbl_Prescriptions FOREIGN KEY (f_conversation_id) REFERENCES tbl_Conversations (f_id)
+);
+
+CREATE TABLE tbl_DealOfPrescriptionDrug
+(
+	f_id                       serial PRIMARY KEY,
+	f_store_id                 integer,
+	f_time                     timestamp NOT NULL,
+	f_buyer_name               text NOT NULL,
+	f_buyer_age                smallint,
+	f_buyer_is_male            boolean,
+	f_drug_huohao              text,
+	f_drug_mingcheng           text NOT NULL,
+	f_drug_pihao               text,
+	f_drug_guige               text,
+	f_drug_jiliang             text,
+	f_drug_shengchanchangjia   text,
+	f_drug_chufanglaiyuan      text,
+	CONSTRAINT                 fk_tbl_DealOfPrescriptionDrug_1 FOREIGN KEY (f_store_id) REFERENCES tbl_Stores (f_id)
+);
+
+CREATE TABLE tbl_DealOfSpecialDrug
+(
+	f_id                       serial PRIMARY KEY,
+	f_store_id                 integer,
+	f_time                     timestamp NOT NULL,
+	f_buyer_name               text NOT NULL,
+	f_buyer_shenfenzheng       text NOT NULL,
+	f_buyer_age                smallint,
+	f_buyer_is_male            boolean,
+	f_drug_huohao              text,
+	f_drug_mingcheng           text NOT NULL,
+	f_drug_pihao               text,
+	f_drug_guige               text,
+	f_drug_jiliang             text,
+	f_drug_goumaishuliang      text,
+	f_drug_shengchanchangjia   text,
+	f_drug_chufanglaiyuan      text,
+	CONSTRAINT                 fk_tbl_DealOfSpecialDrug_1 FOREIGN KEY (f_store_id) REFERENCES tbl_Stores (f_id)
+);
+
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+insert into tbl_Users values(DEFAULT, 'Admin', '827ccb0eea8a706c4c34a16891f84e7b', 1, NOW(), true);
+
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION concat(text, text)
+RETURNS text AS
+$BODY$
+	DECLARE
+		t text;
+	BEGIN
+		IF character_length($1) > 0 THEN
+			t = $1||','|| $2; 
+		ELSE
+			t = $2;
+		END IF;
+		RETURN t;
+	END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+ALTER FUNCTION concat(text, text) OWNER TO postgres;
+GRANT EXECUTE ON FUNCTION concat(text, text) TO public;
+GRANT EXECUTE ON FUNCTION concat(text, text) TO postgres;
+
+CREATE AGGREGATE sumtext(
+	BASETYPE=text,
+	SFUNC=concat,
+	STYPE=text);
+ALTER AGGREGATE sumtext(text) OWNER TO postgres;
+
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION add_deal_of_prescription_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+)
+RETURNS integer AS
+$BODY$
+	DECLARE
+		id integer;
+	BEGIN
+		INSERT INTO tbl_DealOfPrescriptionDrug VALUES (DEFAULT, storeId, NOW(), buyerName, buyerAge,
+                                                       buyerIsMale, drugHuoHao, drugMingCheng, drugPiHao, drugGuiGe,
+                                                       drugJiLiang, drugShengChanChangJia, drugChuFangLaiYuan)
+		RETURNING f_id INTO id;
+
+		RETURN id;
+	END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+ALTER FUNCTION 
+add_deal_of_prescription_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+)
+OWNER TO postgres;
+
+GRANT EXECUTE ON FUNCTION
+add_deal_of_prescription_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+)
+TO public;
+
+GRANT EXECUTE ON FUNCTION
+add_deal_of_prescription_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+)
+TO postgres;
+
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION add_deal_of_special_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerShenFenZheng      text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugGouMaiShuLiang     text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+)
+RETURNS integer AS
+$BODY$
+	DECLARE
+		id integer;
+	BEGIN
+		INSERT INTO tbl_DealOfSpecialDrug VALUES (DEFAULT, storeId, NOW(), buyerName, buyerShenFenZheng, buyerAge,
+                                                  buyerIsMale, drugHuoHao, drugMingCheng, drugPiHao, drugGuiGe,
+                                                  drugJiLiang, drugGouMaiShuLiang, drugShengChanChangJia, drugChuFangLaiYuan)
+		RETURNING f_id INTO id;
+
+		RETURN id;
+	END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+ALTER FUNCTION 
+add_deal_of_special_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerShenFenZheng      text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugGouMaiShuLiang     text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+)
+OWNER TO postgres;
+
+GRANT EXECUTE ON FUNCTION
+add_deal_of_special_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerShenFenZheng      text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugGouMaiShuLiang     text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+)
+TO public;
+
+GRANT EXECUTE ON FUNCTION
+add_deal_of_special_drug
+(
+	storeId                integer,
+	buyerName              text,
+	buyerShenFenZheng      text,
+	buyerAge               smallint,
+	buyerIsMale            boolean,
+	drugHuoHao             text,
+	drugMingCheng          text,
+	drugPiHao              text,
+	drugGuiGe              text,
+	drugJiLiang            text,
+	drugGouMaiShuLiang     text,
+	drugShengChanChangJia  text,
+	drugChuFangLaiYuan     text
+)
+TO postgres;

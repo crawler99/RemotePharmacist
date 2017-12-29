@@ -1,0 +1,31 @@
+# Log file created/rotated Tuesday, 2 Sep 14 09:14:55 GMT
+20140902 17:14:55.673439 0 I - d:\development\git\remotepharmacist\sessionserver\sessionserver\server\DatabaseManager.h:49 - Connecting to database: hostaddr=127.0.0.1 port=5432 dbname=RemotePharmacist user=postgres password=root123 connect_timeout=5
+20140902 17:14:55.771439 0 I - d:\development\git\remotepharmacist\sessionserver\sessionserver\server\DatabaseManager.h:55 - DB connection established
+20140902 17:14:57.018439 0 I - .\server\WorkerManager.cpp:38 - Creating 4 working threads ...
+20140902 17:14:57.057439 0 I - .\server\Worker.cpp:73 - Starting worker ...
+20140902 17:14:57.081439 0 I - .\server\Worker.cpp:75 - Worker is started
+20140902 17:14:57.106439 0 I - .\server\Worker.cpp:73 - Starting worker ...
+20140902 17:14:57.131439 0 I - .\server\Worker.cpp:75 - Worker is started
+20140902 17:14:57.156439 0 I - .\server\Worker.cpp:73 - Starting worker ...
+20140902 17:14:57.190439 0 I - .\server\Worker.cpp:75 - Worker is started
+20140902 17:14:57.223439 0 I - .\server\Worker.cpp:73 - Starting worker ...
+20140902 17:14:57.248439 0 I - .\server\Worker.cpp:75 - Worker is started
+20140902 17:14:57.278439 0 I - .\server\WorkerManager.cpp:46 - Working threads created successfully
+20140902 17:14:57.298439 0 I - .\server\WorkerManager.cpp:56 - Client heartbeat timeout: 10 seconds, check [pharmacist ]
+20140902 17:15:00.661439 0 I - .\server\Worker.cpp:62 - Client socket accepted: 127.0.0.1:62135
+20140902 17:15:02.160439 1 I - .\server\Worker_MsgProcess.cpp:99 - Login failed: user_name=Admin1, peer=127.0.0.1:62135
+20140902 17:15:03.697439 0 I - .\server\Worker.cpp:62 - Client socket accepted: 127.0.0.1:62148
+20140902 17:15:05.197439 3 I - .\server\Worker_MsgProcess.cpp:56 - Login succeeded: user_name=Admin, peer=127.0.0.1:62148, sessionId=16777217
+20140902 17:15:11.813439 3 D - .\server\DBCmd_PharmacistAdd.cpp:98 - ERROR:  duplicate key value violates unique constraint "tbl_users_f_username_key"
+DETAIL:  Key (f_username)=(zhangsan) already exists.
+
+20140902 17:15:23.923439 3 D - .\server\DBCmd_AddStore.cpp:89 - ERROR:  duplicate key value violates unique constraint "tbl_stores_f_name_key"
+DETAIL:  Key (f_name)=(科创药业红牌楼分店) already exists.
+
+20140902 17:15:40.624439 3 D - .\server\DBCmd_PatientAdd.cpp:77 - ERROR:  duplicate key value violates unique constraint "tbl_users_f_username_key"
+DETAIL:  Key (f_username)=(hpl) already exists.
+
+20140902 17:15:52.722439 1 E - .\util\Utils.cpp:92 - Error when receiving data: [Connection reset by peer]
+20140902 17:15:52.723439 3 E - .\util\Utils.cpp:92 - Error when receiving data: [Connection reset by peer]
+20140902 17:15:52.758439 1 E - .\server\Worker.cpp:97 - Socket receiving error, shutting down and close ...
+20140902 17:15:52.792439 3 E - .\server\Worker.cpp:97 - Socket receiving error, shutting down and close ...
