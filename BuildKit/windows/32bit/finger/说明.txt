@@ -1,0 +1,8 @@
+只需要使用两个函数:loadlib 和ComMask
+BOOL CFinger::ComMask(unsigned char *pucEnBuff, int slEnLen, unsigned char *pucGenBuff)
+这个就是比对指纹：
+pucEnBuff: 这个是登记时生成的模板
+slEnLen:  长度,512字节。
+pucGenBuff：这个是后续生成的特征码，传进来的长度是256字节。
+
+里面有些和WINDOWS消息相关的定义，可以直接删除。
